@@ -1,6 +1,6 @@
 export const TIMER_OPTIONS = {
   work: {
-    minutes: 25,
+    minutes: 0.1,
     label: "🔥",
   },
   break: {
