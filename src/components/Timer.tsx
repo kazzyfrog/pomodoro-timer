@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ControlButton } from "./ControlButton";
 import { ModeTypeButton } from "./ModeTypeButton";
 import { TIMER_OPTIONS } from "../constants";
+import useAudio from "../hooks/useAudio";
 
 const Timer = () => {
   const [mode, setMode] = useState<"work" | "break">("work");
@@ -16,40 +17,7 @@ const Timer = () => {
 
   const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
-  // 追加
-  const audioRef = useRef<AudioContext | null>(null);
-
-  useEffect(() => {
-    audioRef.current = window.AudioContext ? new window.AudioContext() : null;
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.close();
-      }
-    };
-  }, []);
-
-  const playBeep = (frequency: number, duration: number) => {
-    if (!audioRef.current) return;
-    const oscillator = audioRef.current.createOscillator();
-    const gainNode = audioRef.current.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioRef.current.destination);
-
-    gainNode.gain.value = 0.5;
-    oscillator.frequency.value = frequency;
-    oscillator.start();
-
-    setTimeout(() => {
-      oscillator.stop();
-    }, duration);
-  };
-
-  const playChime = () => {
-    playBeep(523.25, 200); // C5: ド
-    setTimeout(() => playBeep(659.25, 200), 200); // E5: ミ
-    setTimeout(() => playBeep(783.99, 400), 400); // G5: ソ
-  };
+  const { playChime, audioRef } = useAudio();
 
   // タイマー完了時の処理
   useEffect(() => {
